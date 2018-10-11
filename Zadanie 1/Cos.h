@@ -28,7 +28,7 @@ public:
 
   static double SumBasedOnPreviouFromBegin(double x, int n)
   {
-    double result = 1;
+    double result = 1.0;
     double tab[n];
     tab[0] = 1;
     for (int i = 1; i < n; i++)
@@ -47,7 +47,7 @@ public:
     {
       tab[i] =  tab[i-1]*(-1)*(power(x,2))/((2*i)*(2*i-1));
     }
-    double result = 0;
+    double result = 0.0;
     for (int i = n-1; i >= 0; i--)
     {
       result += tab[i];

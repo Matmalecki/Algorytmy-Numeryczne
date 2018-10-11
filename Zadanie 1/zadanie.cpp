@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
       cout << "(Opcjonalnie) Pierwszy arg - liczba N" << endl;
       cout << "(Opcjonalnie) Drugi arg - \"smallArgs\" Argumenty od 0 do 2PI/10000" << endl;
       return 0;
-    }
+    }else
     N = atoi(argv[1]);
 
     if (argc > 2)
@@ -51,46 +51,31 @@ int main(int argc, char * argv[])
 
   Sin sinus;
   Cos cosin;
-  ofstream oFile;
-  oFile.open("wyniki.txt");
-  if (oFile.is_open())
+  double blad[4];
+  for (int i = 0; i < 4; i++)
+    blad[i] = 0.0;
+  int k = 0;
+  cout.precision(20);
+  for (x = startingValue; x < endValue; x += plu )
   {
-
-    oFile << setprecision(std::numeric_limits<double>::digits10 + 1);
-    for (x = startingValue; x < endValue; x += plu )
-    {
-      double FromMathh = sin(cos(x));
-      oFile << BladBezwzgledny(sinus.SumTaylorFromBegin(cosin.SumTaylorFromBegin(x,N), N), FromMathh) << endl;
-      oFile << BladBezwzgledny(sinus.SumTaylorFromEnd(cosin.SumTaylorFromBegin(x,N), N), FromMathh) << endl;
-      oFile << BladBezwzgledny(sinus.SumBasedOnPreviouFromBegin(cosin.SumBasedOnPreviouFromBegin(x,N),N), FromMathh) << endl;
-      oFile << BladBezwzgledny(sinus.SumBasedOnPreviouFromEnd(cosin.SumBasedOnPreviouFromEnd(x,N),N), FromMathh) << endl;
-
-    }
+    double FromMathh = sin(cos(x));
+    blad[k] += BladBezwzgledny(Sin::SumTaylorFromBegin(Cos::SumTaylorFromBegin(x,N), N), FromMathh);   k++;
+    blad[k] += BladBezwzgledny(Sin::SumTaylorFromEnd(Cos::SumTaylorFromEnd(x,N), N), FromMathh);     k++;
+    blad[k] += BladBezwzgledny(Sin::SumBasedOnPreviouFromBegin(Cos::SumBasedOnPreviouFromBegin(x,N), N), FromMathh);   k++;
+    blad[k] += BladBezwzgledny(Sin::SumBasedOnPreviouFromEnd(Cos::SumBasedOnPreviouFromEnd(x,N), N), FromMathh);   k++;
+    k%=4;
   }
-  oFile.close();
-  ifstream iFile;
-  iFile.open("wyniki.txt");
   ofstream outputError;
   outputError.open(nameOfOutput.c_str());
   outputError << setprecision(std::numeric_limits<double>::digits10 + 1);
-  double blad[4];
-  for(int i = 0 ; i < 4; i++)
-    blad[i] = 0.0;
-  if (iFile.is_open())
-  {
-    double pom;
-      for (int i = 0; i < iterations; i++)
-      {
-          iFile >> pom;
-          blad[i%4]+=pom;
-      }
-      cout.precision(std::numeric_limits<double>::digits10 + 1);
-      for(int i = 0 ; i < 4; i++){
+
+  cout.precision(20);
+  for(int i = 0 ; i < 4; i++){
         blad[i]/=iterations;
         cout  << blad[i] << endl;
         outputError << blad[i] << endl;
-      }
   }
+
 
 
 
