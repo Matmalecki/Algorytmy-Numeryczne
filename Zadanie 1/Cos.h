@@ -33,7 +33,7 @@ public:
     tab[0] = 1;
     for (int i = 1; i < n; i++)
     {
-      tab[i] = tab[i-1]*(-1)*(power(x,2))/((2*i)*(2*i-1));
+      tab[i] = (tab[i-1]*(-1)*(power(x,2)))/((2*i)*(2*i-1));
       result+= tab[i];
     }
 
@@ -45,7 +45,7 @@ public:
     tab[0] = 1;
     for (int i = 1; i < n; i++)
     {
-      tab[i] =  tab[i-1]*(-1)*(power(x,2))/((2*i)*(2*i-1));
+      tab[i] =  (tab[i-1]*(-1)*(power(x,2)))/((2*i)*(2*i-1));
     }
     double result = 0.0;
     for (int i = n-1; i >= 0; i--)

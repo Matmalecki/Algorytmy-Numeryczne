@@ -20,11 +20,12 @@ int main(int argc, char * argv[])
 {
 
   int N = 50;
+  const int przedzial = 100;
   double x;
   int iterations = 1000000;
   double startingValue = 0;
   double endValue = 2 * M_PI;
-  string nameOfOutput = "AvgError.txt";
+  string nameOfOutput = "Average.txt";
   if (argc > 1)
   {
     if (!strcmp(argv[1],"--help"))
@@ -37,7 +38,6 @@ int main(int argc, char * argv[])
       return 0;
     }else
     N = atoi(argv[1]);
-
     if (argc > 2)
     {
       if (!strcmp(argv[2],"smallArgs"))
@@ -48,47 +48,51 @@ int main(int argc, char * argv[])
     }
   }
   double plu = (endValue-startingValue)/iterations;
-
   Sin sinus;
   Cos cosin;
-  double blad[4];
-  for (int i = 0; i < 4; i++)
-    blad[i] = 0.0;
+
+  double blad[4][przedzial];
+  for (int j = 0; j < przedzial; j++){
+    for (int i = 0; i < 4; i++)
+      blad[i][j] = 0.0;
+    }
   int k = 0;
-  cout.precision(20);
+  int j = 0;
+  int c = 0;
   for (x = startingValue; x < endValue; x += plu )
   {
     double FromMathh = sin(cos(x));
-    blad[k] += BladBezwzgledny(Sin::SumTaylorFromBegin(Cos::SumTaylorFromBegin(x,N), N), FromMathh);   k++;
-    blad[k] += BladBezwzgledny(Sin::SumTaylorFromEnd(Cos::SumTaylorFromEnd(x,N), N), FromMathh);     k++;
-    blad[k] += BladBezwzgledny(Sin::SumBasedOnPreviouFromBegin(Cos::SumBasedOnPreviouFromBegin(x,N), N), FromMathh);   k++;
-    blad[k] += BladBezwzgledny(Sin::SumBasedOnPreviouFromEnd(Cos::SumBasedOnPreviouFromEnd(x,N), N), FromMathh);   k++;
+
+    blad[k][j] += BladBezwzgledny(Sin::SumTaylorFromBegin(Cos::SumTaylorFromBegin(x,N), N), FromMathh);   k++;
+    blad[k][j] += BladBezwzgledny(Sin::SumTaylorFromEnd(Cos::SumTaylorFromEnd(x,N), N), FromMathh);     k++;
+    blad[k][j] += BladBezwzgledny(Sin::SumBasedOnPreviouFromBegin(Cos::SumBasedOnPreviouFromBegin(x,N), N), FromMathh);   k++;
+    blad[k][j] += BladBezwzgledny(Sin::SumBasedOnPreviouFromEnd(Cos::SumBasedOnPreviouFromEnd(x,N), N), FromMathh);   k++;
     k%=4;
+    c++;
+    if (c >= iterations/przedzial){
+      j++;
+      c = 0;
+    }
   }
   ofstream outputError;
-  outputError.open(nameOfOutput.c_str());
+  outputError.open("Averages.csv");
   outputError << setprecision(std::numeric_limits<double>::digits10 + 1);
-
   cout.precision(20);
+  double averages[4];
   for(int i = 0 ; i < 4; i++){
-        blad[i]/=iterations;
-        cout  << blad[i] << endl;
-        outputError << blad[i] << endl;
+    for (int t = 0; t < przedzial; t++)
+    {
+
+          blad[i][t]/=(iterations/przedzial);
+          averages[i]+=  blad[i][t];
+          outputError << blad[i][t] << endl;
+    }
+    outputError << endl;
+    averages[i]/= przedzial;
+    cout << averages[i] << endl;
   }
 
 
 
-
-
-  /*
-  std::cout << "Wynik z biblioteki math.h " << sin(cos(x)) << std::endl;
-  std::cout << "Wynik bezsposrednio ze wzoru Taylora w kolejnosci od poczatku " << sinus.SumTaylorFromBegin(cosin.SumTaylorFromBegin(x,N), N) << std::endl;
-  std::cout << "Wynik bezsposrednio ze wzoru Taylora w kolejnosci od konca "<< sinus.SumTaylorFromEnd(cosin.SumTaylorFromEnd(x,N), N) << std::endl;
-  std::cout << "Wynik sumujac elementy szeregu obliczajac kolejny na podstawie poprzedniego od poczatku "
-            << sinus.SumBasedOnPreviouFromBegin(cosin.SumBasedOnPreviouFromBegin(x,N),N)
-            << std::endl;
-  std::cout << "Wynik sumujac elementy szeregu obliczajac kolejny na podstawie poprzedniego od konca  "
-            << sinus.SumBasedOnPreviouFromEnd(cosin.SumBasedOnPreviouFromEnd(x,N),N) << std::endl;
-            */
   return 0;
 }
