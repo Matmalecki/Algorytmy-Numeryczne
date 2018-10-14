@@ -1,9 +1,8 @@
 #ifndef _Func_h_
 #define _Func_h_
-#include <math.h>
 namespace funkcje {
 
-  double power(float x, int power)
+  double power(double x, int power)
   {
     if (power == 0)
       return 1;
